@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Evento da Tear - Início</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      background: radial-gradient(circle at center, #0a0a0a, #000000);
+      overflow: hidden;
+      font-family: 'Roboto', sans-serif;
+      color: #ffe81f;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: auto;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(6px);
+      padding: 10px 30px;
+      z-index: 5;
+      display: flex;
+      gap: 30px;
+      border-radius: 0 0 12px 0;
+    }
+
+    nav a {
+      color: #fffb00;
+      text-decoration: none;
+      font-weight: bold;
+      font-family: 'Orbitron', sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    nav a:hover {
+      text-shadow: 0 0 8px #ffe600, 0 0 15px #ffcc00;
+      transform: scale(1.1);
+    }
+
+    canvas#matrix { 
+      position: fixed; 
+      top:0; left:0; 
+      z-index:0; 
+    }
+
+    .textos {
+      position: relative; 
+      z-index: 2; 
+      max-width: 700px; 
+      padding: 20px; 
+      line-height: 1.6; 
+      font-size: 20px; 
+      text-shadow: 0 0 15px #000;
+      color: #f6ff00;
+      text-shadow: 0 0 12px #e9ff1f, 0 0 25px #ffaa00;
+    }
+
+    .textos h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 3rem;
+      color: #f2ff00;
+      text-shadow: 0 0 12px #e9ff1f, 0 0 25px #ffaa00;
+    }
+
+    .fade-text { 
+      opacity: 0; 
+      animation: fade 12s infinite; 
+    }
+
+    .fade-text:nth-child(1) { animation-delay: 0s; }
+    .fade-text:nth-child(2) { animation-delay: 3s; }
+    .fade-text:nth-child(3) { animation-delay: 6s; }
+    .fade-text:nth-child(4) { animation-delay: 9s; }
+
+    @keyframes fade { 
+      0%,20%{opacity:0; transform: scale(0.95);} 
+      30%,60%{opacity:1; transform: scale(1);} 
+      70%,100%{opacity:0; transform: scale(1.05);} 
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Início</a>
+    <a href="sobre.html">Sobre</a>
+    <a href="local.html">Local</a>
+  </nav>
+
+  <canvas id="matrix"></canvas>
+
+  <div class="textos">
+  <div class="fade-text"><h1>VERDADE ARTIFICIAL E ÉTICA NA ERA DIGITAL</h1></div>
+  <div class="fade-text">Um mergulho crítico e criativo nas relações entre tecnologia, ética e sociedade.</div>
+  <div class="fade-text">23 • 24 • 25 • 26 de Setembro — Bloco A, Sala 1.<br>Entrada gratuita, participe!</div>
+  <div class="fade-text">Organização: <strong>Grupo Tear Futurístico 2025</strong></div>
+</div>
+
+<script>
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+let w = canvas.width = window.innerWidth;
+let h = canvas.height = window.innerHeight;
+
+window.onresize = () => { 
+  w = canvas.width = window.innerWidth; 
+  h = canvas.height = window.innerHeight; 
+};
+
+const chars = '01ABCDEFGHIJKLMNOPQRSTUVWXYZ@#$%^&*';
+const fontSize = 22;
+const columns = Math.floor(w / fontSize);
+const drops = Array(columns).fill(0);
+
+const maskCanvas = document.createElement("canvas");
+const maskCtx = maskCanvas.getContext("2d");
+maskCanvas.width = w;
+maskCanvas.height = h;
+maskCtx.fillStyle = "white";
+maskCtx.font = "bold 700px sans-serif";
+maskCtx.textAlign = "center";
+maskCtx.textBaseline = "middle";
+maskCtx.fillText("🤖", w/2, h/2);
+const maskData = maskCtx.getImageData(0,0,w,h).data;
+
+function draw() {
+  // mais opaco -> rastro apaga mais rápido
+  ctx.fillStyle = "rgba(0,0,0,0.1)";  
+  ctx.fillRect(0,0,w,h);
+
+  // verde mais suave
+  ctx.fillStyle = "#3f3";  
+  ctx.font = fontSize + "px monospace";
+
+  for(let i=0;i<columns;i++){
+    const x = i*fontSize;
+    const y = drops[i]*fontSize;
+    const index = ((y|0)*w + x)*4;
+
+    if(maskData[index+3] > 0 && Math.random() > 0.2) {  
+      // menor chance de desenhar a letra = menos poluição
+      const text = chars.charAt(Math.floor(Math.random()*chars.length));
+      ctx.fillText(text, x, y);
+    }
+
+    drops[i] += 0.5;
+    if(drops[i]*fontSize > h || Math.random() > 0.97) drops[i] = 0; 
+  }
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+
+</body>
+</html>
