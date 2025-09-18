@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Evento da Tear - Sobre</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin:0;
+      background:black;
+      color:#ffe81f;
+      font-family:'Roboto', sans-serif;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      text-align:center;
+      overflow-x:hidden;
+    }
+
+    nav {
+      position:fixed;
+      top:0;
+      width:100%;
+      background:rgba(0,0,0,0.5);
+      backdrop-filter: blur(6px);
+      padding:14px 0;
+      z-index:5;
+      box-shadow:0 2px 15px rgba(0,0,0,0.8);
+    }
+
+    nav a {
+      color:#ffe81f;
+      margin:0 20px;
+      text-decoration:none;
+      font-weight:bold;
+      font-family:'Orbitron', sans-serif;
+      transition:all 0.3s ease;
+    }
+
+    nav a:hover {
+      text-shadow:0 0 8px #ffe81f,0 0 18px #ffcc00;
+      transform:scale(1.15);
+    }
+
+    canvas#matrix {
+      position:fixed;
+      top:0; left:0;
+      width:100%; height:100%;
+      z-index:0;
+    }
+
+    .content {
+      position:relative;
+      z-index:2;
+      margin-top:120px;
+      max-width:850px;
+      line-height:1.7;
+      font-size:18px;
+      padding:40px;
+      background:rgba(0,0,0,0.65);
+      border-radius:20px;
+      box-shadow:0 8px 25px rgba(0,0,0,0.8);
+      backdrop-filter:blur(12px);
+      animation:fadeIn 2s ease forwards;
+    }
+
+    h1 {
+      font-family:'Orbitron', sans-serif;
+      font-size:3rem;
+      margin-bottom:25px;
+      text-shadow:0 0 12px #ffe81f,0 0 25px #ffaa00;
+    }
+
+    p { 
+      color:#fdfdfd; 
+      text-shadow:0 0 6px #000; 
+      margin-bottom:20px; 
+    }
+
+    @keyframes fadeIn {
+      from {opacity:0; transform:scale(0.95);}
+      to {opacity:1; transform:scale(1);}
+    }
+
+    @media(max-width:768px){
+      h1{font-size:2rem;}
+      .content{padding:20px; margin:80px 15px 20px; font-size:16px;}
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Início</a>
+    <a href="sobre.html">Sobre</a>
+    <a href="local.html">Local</a>
+  </nav>
+
+  <canvas id="matrix"></canvas>
+
+  <div class="content">
+    <h1>Performance Dramática</h1>
+ 
+    <p>
+    O projeto “Verdade Artificial e Ética na Era Digital” propõe uma experiência crítica e criativa para refletir sobre como a tecnologia influencia nossa forma de viver, pensar e se informar. Entre arte, debates e vivências interativas, os participantes são convidados a explorar dilemas do mundo digital, questionar verdades e imaginar futuros possíveis no encontro entre ética, sociedade e inteligência artificial.
+    </p>
+    
+  </div>
+
+<script>
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+let w = canvas.width = window.innerWidth;
+let h = canvas.height = window.innerHeight;
+
+window.onresize = () => { 
+  w = canvas.width = window.innerWidth; 
+  h = canvas.height = window.innerHeight; 
+};
+
+const chars = '01ABCDEFGHIJKLMNOPQRSTUVWXYZ@#$%^&*';
+const fontSize = 22;
+const columns = Math.floor(w / fontSize);
+const drops = Array(columns).fill(0);
+
+const maskCanvas = document.createElement("canvas");
+const maskCtx = maskCanvas.getContext("2d");
+maskCanvas.width = w;
+maskCanvas.height = h;
+maskCtx.fillStyle = "white";
+maskCtx.font = "bold 700px sans-serif";
+maskCtx.textAlign = "center";
+maskCtx.textBaseline = "middle";
+maskCtx.fillText("🤖", w/2, h/2);
+const maskData = maskCtx.getImageData(0,0,w,h).data;
+
+function draw() {
+  ctx.fillStyle = "rgba(0,0,0,0.05)";
+  ctx.fillRect(0,0,w,h);
+  ctx.fillStyle = "#0f0";
+  ctx.font = fontSize + "px monospace";
+
+  for(let i=0;i<columns;i++){
+    const x = i*fontSize;
+    const y = drops[i]*fontSize;
+    const index = ((y|0)*w + x)*4;
+    if(maskData[index+3] > 0){ 
+      const text = chars.charAt(Math.floor(Math.random()*chars.length));
+      ctx.fillText(text, x, y);
+    }
+    drops[i]++;
+    if(drops[i]*fontSize > h || Math.random() > 0.94) drops[i] = 0;
+  }
+  requestAnimationFrame(draw);
+}
+draw();
+</script> 
+</body>
+</html>
